@@ -73,10 +73,20 @@ def printBTK(node, indent=""):
               print(new_indent + "R:")
               printBTK(node.rightnode, new_indent)
 
-print("B: ")
-printBTK(B.root)
-print("")
 
+
+#######################################################################
+def printTBF(node, indent=""):
+  if node is not None:
+      print(indent + str(node.key) + ',' + str(node.bf))
+      if node.leftnode is not None or node.rightnode is not None:
+          new_indent = "   " + indent
+          if node.leftnode is not None:
+              print(new_indent + "L:")
+              printTBF(node.leftnode, new_indent)
+          if node.rightnode is not None:
+              print(new_indent + "R:")
+              printTBF(node.rightnode, new_indent)
 
 #######################################################################
 def searchR(element, currentNode):
@@ -222,8 +232,6 @@ def update(B, element, key):
 
 
 
-#########delete
-
 
 ################EJERCICIO 2
 
@@ -311,61 +319,142 @@ def traverseBreadFirst(B):
   reverseList(L)
   return L
 
+########## Algo 2 TP 2 Ej 1
+
+def rotateRight(Tree,avlnode):
+  newRoot = avlnode.leftnode 
+
+  avlnode.leftnode = newRoot.rightnode ## el hijo izquierdo de el avl pasa a ser hijo derecho de la new root
+
+  if newRoot.rightnode is not None:       ## le actualiza el padre al hijo derecho
+    newRoot.rightnode.parent = avlnode
+
+  newRoot.parent = avlnode.parent  ### actualizar padre
+
+  if avlnode.parent is None: ## si avl era la raíz, actualizar
+    Tree.root = newRoot
+  else:                       ## actualiza si nuestro nodo inicial era hijo izquierdo o derecho
+    if avlnode.parent.rightnode == avlnode:
+      avlnode.parent.rightnode = newRoot
+    else:
+       avlnode.parent.leftnode = newRoot
+  newRoot.rightnode = avlnode ## avl hijo derecho de new root
+  avlnode.parent = newRoot ## asignar padre a avl
 
 
 
-insert(B, 15, 15)
-insert(B, 10, 10)
-insert(B, 5, 5)
-insert(B, 2, 2)
-insert(B, 6, 6)
-insert(B, 12, 12)
-insert(B, 25, 25)
-insert(B, 17, 17)
-insert(B, 30, 30)
-insert(B, 27, 27)
-insert(B, 31, 31)
-printBTK(B.root)
+  return newRoot
 
+def rotateLeft(Tree,avlnode):
+  newRoot = avlnode.rightnode
+  avlnode.rightnode = newRoot.leftnode
 
-def sumarValoresSubA(current, suma):
-  if current is not None:
-    suma = sumarValoresSubA(current.leftnode, suma)
-    suma = suma + current.value
-    suma = sumarValoresSubA(current.rightnode, suma)
-  return suma
+  if newRoot.leftnode is not None:
+    newRoot.leftnode.parent = avlnode
+  
+  newRoot.parent = avlnode.parent
 
-def tilt_treeR(current, suma):
-  #Recoorrer todo el arbol, y sumar el tilt de cada nodo
-  if current is not None:
-    suma = tilt_treeR(current.leftnode, suma)
-    suma = suma + tilt_node(current)
-    suma = tilt_treeR(current.rightnode, suma)
-  return suma
-
-def tilt_tree(B):
-  return tilt_treeR(B.root, 0)
-
-
-
-def tilt_node(current):
-
-  if current.leftnode is None and current.rightnode is None:
-    return 0
-
-  if current.leftnode is None:
-    left = 0 
+  if avlnode.parent is None:
+    Tree.root = newRoot
   else:
-    left = sumarValoresSubA(current.leftnode, 0)
+      if avlnode.parent.leftnode == avlnode:
+        avlnode.parent.leftnode = newRoot
+      else:
+        avlnode.parent.rightnode = newRoot
 
-  if current.rightnode is None:
-    right = 0
-  else: 
-    right = sumarValoresSubA(current.rightnode, 0)
+  newRoot.leftnode =  avlnode
+  avlnode.parent = newRoot
+   
+  return newRoot
 
 
-  tiltNode = abs(left - right)
-  return tiltNode
+def calculateHeight(node, actualHeight, maxHeight):
+
+  if node.leftnode is None and node.rightnode is None:
+    if actualHeight >= maxHeight:
+      maxHeight = actualHeight
+      return maxHeight
+   
+  if node.leftnode is not None:
+    maxHeight = calculateHeight(node.leftnode, actualHeight + 1, maxHeight)
+  if node.rightnode is not None:
+    maxHeight = calculateHeight(node.rightnode, actualHeight + 1, maxHeight)
+
+  return maxHeight
 
 
-print(tilt_tree(B))
+
+def calculateBalance(AVLTree):
+  # O(n^2) -> podría se O(n)
+  calculateBalanceR(AVLTree.root)
+
+
+def calculateBalanceR(node):
+  if node is None:
+     return
+  calculateBalanceNode(node)
+  if node.leftnode is not None:
+    calculateBalanceR( node.leftnode)
+  if node.rightnode is not None:
+    calculateBalanceR( node.rightnode)
+  
+
+def calculateBalanceNode(node):
+  # O(n^2) -> podría se O(n)
+  if node.leftnode is None and node.rightnode is None:
+    node.bf = 0
+   
+  if node.leftnode is not None and node.rightnode is not None:
+    node.bf = calculateHeight(node.leftnode, 0 , 0) - calculateHeight(node.rightnode, 0, 0)
+  elif node.leftnode is not None:
+    node.bf = calculateHeight(node, 0, 0)
+  elif node.rightnode is not None:
+    node.bf = - calculateHeight(node, 0, 0)
+
+
+
+def reBalance(AVLTree):
+  calculateBalance(AVLTree)
+  reBalanceR(AVLTree, AVLTree.root)
+
+def reBalanceR(AVLTree, currentNode):
+  if currentNode is not None:
+    reBalanceNode(AVLTree, currentNode)
+    reBalanceR(AVLTree, currentNode.leftnode)
+    reBalanceR(AVLTree, currentNode.rightnode)
+
+
+def reBalanceNode(tree,current):
+  if current.bf == 2:
+     if current.leftnode is not None:
+        if current.leftnode.bf == -1:
+           print("caso especial")
+           rotateLeft(tree, current.leftnode)
+     rotateRight(tree, current)
+     return
+  if current.bf == -2:
+    if current.rightnode is not None:
+        if current.rightnode.bf == 1:
+           print("rotate left node right", current.rightnode.key)
+           rotateRight(tree, current.rightnode)
+           
+    print("rotate left node: ", current.key)
+    rotateLeft(tree,current)
+    return
+  
+
+test = AVLTree()
+insert(test, 15, 15)
+insert(test, 10, 10)
+insert(test, 20, 20)
+insert(test, 5, 5)
+insert(test, 12, 12)
+insert(test, 11, 11)
+insert(test, 14, 14)
+
+printBTK(test.root)
+
+
+print("post rotation")
+reBalance(test)
+printBTK(test.root)
