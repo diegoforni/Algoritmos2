@@ -1,5 +1,26 @@
 class Trie:
-	root = None
+    root = None
+    
+    def print(self):
+        if self.root is None:
+            print("Trie is empty.")
+            return
+
+        def print_node(node, level=0):
+            print("  " * level, end="")
+            if node.isEndOfWord:
+                print(f"{node.key} ({level}) -")
+            else:
+                print(f"{node.key} ({level})")
+
+            if node.children:
+                for child in node.children:
+                    print_node(child, level + 1)
+
+        print("Printing Trie:")
+        print_node(self.root)
+
+
 
 class TrieNode:
     parent = None
@@ -39,7 +60,7 @@ def insert(T,element) :
 
         print("current firstChild:", current.children[0].key)
         print("firstChar", firstChar)
-        print("childrenKeys", childrenKeys) # ESTO TIRA EL ERROR
+        print("childrenKeys", childrenKeys) 
 
         # Caso 1: Hay que insertar en un nuevo child
         if firstChar not in childrenKeys:
@@ -48,6 +69,7 @@ def insert(T,element) :
             newNode.parent = current
             current.children.append(newNode)
             insertR(newNode, element)
+            print("ES ESTE")
 
         # Caso 2: Hay que insertar en un child existente
 
@@ -69,9 +91,7 @@ def insert(T,element) :
                 
                 # Si hay más iguales
                 childrenKeys = getChildrenKeys(node)
-                print("DEBUG")
-                print("element[0]: ", element[0])
-                print("childrenKeys: ", childrenKeys)
+
                 if element[0] in childrenKeys:
                     print("Hay más iguales, estoy recorriend")
                     print(" estoy viendo: ", element[0])
@@ -101,10 +121,6 @@ def insert(T,element) :
 
      
 
-
-     
-
-
 def insertR(node, element):
 
     if len(element) == 0:
@@ -120,31 +136,25 @@ def insertR(node, element):
         newNode.key = firstChar
         newNode.parent = node
         node.children.append(newNode)
-        insertR(newNode, element)
+        
+        return insertR(newNode, element)
 
-    return
-
-
-
-def printTrie(T):
-    printR(T.root)
-
-def printR(node):
-    if node.children is None:
-        return
-    for child in node.children:
-        if child.isEndOfWord:
-            print(child.key, "-")
-        else:
-            print(child.key)
-        printR(child)
-
+    if node.children is not None:
+        newNode = TrieNode()
+        newNode.key = firstChar
+        newNode.parent = node
+        node.children.append(newNode)
+        
+        return insertR(newNode, element)
 
 test = Trie()
 insert(test, "hola")
-printTrie(test)
-
-
-print("Inserto holanda")
+insert(test, "hostia")
 insert(test, "holanda")
-printTrie(test)
+insert(test, "horacio")
+insert(test, "juan")
+insert(test, "joder")
+
+
+test.print()
+
