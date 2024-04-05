@@ -158,3 +158,20 @@ insert(test, "joder")
 
 test.print()
 
+def search(T, element):
+    current = T.root
+    return searchR(current, element)
+
+def searchR(node, element):
+    nodeChildren = getChildrenKeys(node)
+    if nodeChildren is None:
+        return False
+    if element[0] in nodeChildren:
+        index = nodeChildren.index(element[0])
+        node = node.children[index]
+        element = element[1:]
+        if len(element) == 0:
+            return True
+        return searchR(node, element)
+    else:
+        return False
