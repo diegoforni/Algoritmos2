@@ -38,6 +38,7 @@ def getChildrenKeys(node):
 
 def insert(T,element) :
     # element es una palabra
+    #
 
     # Si está vacío, inserto toda la palabra en la root
     if T.root is None:
@@ -45,12 +46,12 @@ def insert(T,element) :
         current = T.root
         insertR(current, element)
          
+
     #Si no está vacío
     
     else:
         current = T.root
         firstChar = element[0]
-
 
         if current.children is None:
             print("Error: No debería pasar esto.")
@@ -79,13 +80,11 @@ def insert(T,element) :
 
             def recorrerIguales(node, element):
                 # Si llego al final de la palabra
-                #RAAAAARI
                 if len(element) == 1 and node.key == element[0]:
                     return node
 
                 # Si no llego al final de la palabra   
 
-                # estoy acá, no debería pasar, está mal, el que lo programó
                 if node.children is None:
                     return node, element
                 
