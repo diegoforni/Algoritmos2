@@ -36,6 +36,10 @@ def getChildrenKeys(node):
         keys.append(child.key)
     return keys
 
+
+
+
+#Bug al insertar hola y luego juan, la j aparece 2 veces
 def insert(T,element) :
     # element es una palabra
     #
@@ -146,16 +150,7 @@ def insertR(node, element):
         
         return insertR(newNode, element)
 
-test = Trie()
-insert(test, "hola")
-insert(test, "hostia")
-insert(test, "holanda")
-insert(test, "horacio")
-insert(test, "juan")
-insert(test, "joder")
 
-
-test.print()
 
 def search(T, element):
     current = T.root
@@ -174,3 +169,99 @@ def searchR(node, element):
         return searchR(node, element)
     else:
         return False
+
+
+def delete(T, element):
+    current = T.root
+    return deleteR(current, element, None, None, None)
+
+    
+def deleteR(node, element, lastEnd, lastBif, lastChar):
+
+    nodeChildren = getChildrenKeys(node)
+    if nodeChildren is None:
+        return False
+    if element[0] in nodeChildren:
+        index = nodeChildren.index(element[0])
+        node = node.children[index]
+
+
+        element = element[1:]
+
+        
+        #Agregar last bif
+
+
+        if node.isEndOfWord == True and len(element) != 0:
+            lastEnd = node
+            lastChar = element[0]
+        
+        if getChildrenKeys(node):
+            if len(getChildrenKeys(node)) > 1:
+                lastBif = node
+                lastChar = element[0]
+
+
+
+        if len(element) == 0:
+            #Encontramos la ultima letra
+            nodeChildren = getChildrenKeys(node)
+
+            #Si sigue teniendo hijos##########################
+            if nodeChildren is not None:
+                node.isEndOfWord = False
+                return True
+            
+            #Si no tiene más hijos
+            if nodeChildren is None:
+                if lastEnd:
+                    print("lastEnd: ", lastEnd.key)
+                    while node != lastEnd:
+                        node = node.parent
+
+                    index = getChildrenKeys(node).index(lastChar)
+                    print("Index: ", index)
+                    node.children.pop(index)
+
+                    return True
+                
+                if lastBif:
+                    print("lastBif: ", lastBif.key)
+                    while node != lastBif:
+                        node = node.parent
+                    
+                    print("Debug, Node: ", node.key)
+                    print("Debug, lastChar: ", lastChar)
+
+                    index = getChildrenKeys(node).index(lastChar)
+                    print("Index: ", index)
+                    node.children.pop(index)
+
+                    return True
+        
+        
+        if node is not None and len(element) > 0:
+            return deleteR(node, element, lastEnd, lastBif, lastChar)
+        else:
+            print("gho")
+            return False
+    else:
+        return False
+    
+
+test = Trie()
+insert(test, "hola")
+insert(test, "hostia")
+insert(test, "holanda")
+insert(test, "horacio")
+insert(test, "juan")
+
+
+
+test.print()
+
+print("-----------------")
+
+delete(test, "hostia")
+
+test.print()
