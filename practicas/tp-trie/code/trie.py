@@ -58,14 +58,10 @@ def insert(T,element) :
         firstChar = element[0]
 
         if current.children is None:
-            print("Error: No debería pasar esto.")
             return "Error: No debería pasar esto."
         
         childrenKeys = getChildrenKeys(current)
 
-        print("current firstChild:", current.children[0].key)
-        print("firstChar", firstChar)
-        print("childrenKeys", childrenKeys) 
 
         # Caso 1: Hay que insertar en un nuevo child
         if firstChar not in childrenKeys:
@@ -73,14 +69,13 @@ def insert(T,element) :
             newNode.key = firstChar
             newNode.parent = current
             current.children.append(newNode)
+            element = element[1:]
             insertR(newNode, element)
-            print("ES ESTE")
 
         # Caso 2: Hay que insertar en un child existente
 
         if firstChar in childrenKeys:
             # Recorrer el arbol todo lo posible
-            print("Recorrer iguales")
 
             def recorrerIguales(node, element):
                 # Si llego al final de la palabra
@@ -96,8 +91,7 @@ def insert(T,element) :
                 childrenKeys = getChildrenKeys(node)
 
                 if element[0] in childrenKeys:
-                    print("Hay más iguales, estoy recorriend")
-                    print(" estoy viendo: ", element[0])
+
                     index = childrenKeys.index(element[0])
                     node = node.children[index]
                     element = element[1:]
@@ -109,16 +103,12 @@ def insert(T,element) :
                 
                 # Si no hay más iguales
                 else:
-                    print("No hay más iguales")
-                    print("current final adentro de recorrer: ", node.key)
+
                     return node, element
                 
             
             current, element = recorrerIguales(current, element)
-            print("current final pre insertar: ", current.key)
-            print("current esEndOfWord: ", current.isEndOfWord)
-            print("estoy insertando: ", element)
-            print("estoy en el nodo: ", current.key)
+
             insertR(current, element)
 
 
@@ -128,6 +118,7 @@ def insertR(node, element):
 
     if len(element) == 0:
         node.isEndOfWord = True
+        
         return
 
     firstChar = element[0]
@@ -139,7 +130,8 @@ def insertR(node, element):
         newNode.key = firstChar
         newNode.parent = node
         node.children.append(newNode)
-        
+
+
         return insertR(newNode, element)
 
     if node.children is not None:
@@ -147,6 +139,7 @@ def insertR(node, element):
         newNode.key = firstChar
         newNode.parent = node
         node.children.append(newNode)
+
         
         return insertR(newNode, element)
 
@@ -249,19 +242,61 @@ def deleteR(node, element, lastEnd, lastBif, lastChar):
         return False
     
 
-test = Trie()
-insert(test, "hola")
-insert(test, "hostia")
-insert(test, "holanda")
-insert(test, "horacio")
-insert(test, "juan")
+
+
+def ejercicio4(T, p, n):
+    #dado un árbol Trie T, un patrón p (prefijo) y un entero n, escriba todas las palabras del árbol que empiezan por p y sean de longitud n. 
+
+    #Paso 1: recorrer hasta la última letra de p, contador i
+    node = T.root
+    element = p
+    i = 0
+    endOfWordsFound = 0
+
+
+    while True:
+        nodeChildren = getChildrenKeys(node)
+        if nodeChildren is None:
+            break
+        if element[0] in nodeChildren:
+            index = nodeChildren.index(element[0])
+            node = node.children[index]
+            i += 1
+            element = element[1:]
+            if len(element) == 0:
+                break
+        else: return False
+
+    #Paso 2: Recorrer completo n - i niveles
+    n = n + 1
+
+    endOfWordsFound = recorrerHastaN(node, i, n, 0)
+
+    #Paso 3: Devolver cantidad de endOfWord encontrados
+
+    return endOfWordsFound
 
 
 
-test.print()
+def recorrerHastaN(node, i, n, endOfWordFound):
 
-print("-----------------")
+    if i <= n:
+        i += 1
 
-delete(test, "hostia")
 
-test.print()
+        if node.isEndOfWord == True:
+            # Bug: endOfWordFound es None
+            if i == n:
+                endOfWordFound += 1
+
+        childrenKeys = getChildrenKeys(node)
+
+        if childrenKeys is not None:
+
+            for j in range((len(childrenKeys))):
+                endOfWordFound = recorrerHastaN(node.children[j], i, n, endOfWordFound)
+
+        return endOfWordFound
+    else: return endOfWordFound
+
+
