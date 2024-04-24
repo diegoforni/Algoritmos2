@@ -283,7 +283,6 @@ def recorrerHastaN(node, i, n, endOfWordFound):
     if i <= n:
         i += 1
 
-
         if node.isEndOfWord == True:
             # Bug: endOfWordFound es None
             if i == n:
@@ -299,4 +298,45 @@ def recorrerHastaN(node, i, n, endOfWordFound):
         return endOfWordFound
     else: return endOfWordFound
 
+
+
+def autoCompletar(Trie, cadena):
+    return autoCompletarR(Trie.root, cadena)
+
+def autoCompletarR(node, element):
+
+    nodeChildren = getChildrenKeys(node)
+    if nodeChildren is None:
+        return False
+
+    if len(element) == 0:
+        return completeR(node, element, False, "")
+    if element[0] in nodeChildren:
+        index = nodeChildren.index(element[0])
+        node = node.children[index]
+        element = element[1:]
+        return autoCompletarR(node, element)
+
+    else:
+        if len(element) > 1:
+            return completeR(node, element, False, "")
+    
+def completeR(node, element, bifurcations, complete):
+    if node.isEndOfWord == True:
+        complete = complete[1:]
+        complete += node.key
+        return complete
+    
+    nodeChildren = getChildrenKeys(node)
+    if len(nodeChildren) != 1:
+        bifurcations = True
+    
+    if bifurcations == True:
+        return None
+    
+    else:
+        complete += node.key
+        element = element[1:]
+        return completeR(node.children[0], element, bifurcations, complete)
+    
 
