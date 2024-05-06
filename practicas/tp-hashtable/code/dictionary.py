@@ -28,16 +28,6 @@ def insert(D, key, value):
 
     return D  # Return the updated dictionary
 
-dictionary = []
-
-dictionary = insert(dictionary, 1, "uno")
-dictionary = insert(dictionary, 2, "dos")
-dictionary = insert(dictionary, 3, "tres")
-dictionary = insert(dictionary, 9, "nueve")
-dictionary = insert(dictionary, 18, "18")
-dictionary = insert(dictionary, 18, "dieciocho")
-
-
 
 def search(D,key):
     hashKey = hash(key)
@@ -98,6 +88,60 @@ def ejercicio5(L):
 
 
 
+def hash2(k):
+    hashKey = 0
+    for i in range(len(k)):
+        hashKey = hashKey + (ord(k[i]))*10**i
+    return hashKey % 191
+
+
+
+def insert2(D, key, value):
+    hashKey = hash2(key)
+
+    listToInsert = [key, value]
+
+    if len(D) == 0:
+        D = []
+        for i in range(191):
+            D.insert(i, [])
+
+    if len(D[hashKey]) >= 1:
+        bucket = D[hashKey]
+        for element in bucket:
+            if element[0] == key:
+                element[1] = value
+                return D
+
+    D[hashKey].append(listToInsert)
+
+    return D  # Return the updated dictionary
+
+
+def search2(D,key):
+    hashKey = hash2(key)
+
+    bucket = D[hashKey]
+
+    for list in bucket:
+        if list[0] == key:
+            return list[1]
+        
+
+def delete2(D, key):
+    hashKey = hash2(key)
+    bucket = D[hashKey]
+
+    i = 0
+
+    for list in bucket:
+        if list[0] == key:
+            bucket.pop(i)
+            return D
+        i += 1
+
+
+
 def ejercicio7(string):
     compressedStr = ""
     counter = 1
@@ -121,3 +165,22 @@ def ejercicio7(string):
             compressedStr = compressedStr + char
        
     return compressedStr
+
+def ejercicio8(S,P):
+    hashP = hash2(P)
+    lenP = len(P)
+    for i in range(len(S)):
+        if hash2(S[i:i+lenP]) == hashP:
+            return i 
+        
+
+def ejercicio9(S,T):
+    dictionary = []
+    for i in range(len(T)):
+        dictionary = insert(dictionary, T[i], T[i])
+    for i in range(len(S)):
+        searchResult = search(dictionary, S[i])
+        if searchResult is None or searchResult != S[i]:
+            return False
+    return True
+        
