@@ -1,0 +1,126 @@
+class Tree:
+    def __init__(self):
+        self.root = None
+    
+    def insert(self, parent_key, child_key):
+        if self.root is None:
+            # If the tree is empty, create a root node with the given child key
+            self.root = TreeNode()
+            self.root.key = child_key
+            return True
+        else:
+            # Search for the parent node
+            parent_node = self._find_node(self.root, parent_key)
+            if parent_node:
+                # If parent node is found, create a new child node and add it to the parent's children list
+                new_child = TreeNode()
+                new_child.key = child_key
+                if parent_node.children is None:
+                    parent_node.children = [new_child]
+                else:
+                    parent_node.children.append(new_child)
+                new_child.parent = parent_node
+                return True
+            else:
+                print("Parent not found.")
+                return False
+
+    def _find_node(self, current_node, key):
+        # Helper function to find a node with the given key starting from the current node
+        if current_node.key == key:
+            return current_node
+        elif current_node.children:
+            for child in current_node.children:
+                found_node = self._find_node(child, key)
+                if found_node:
+                    return found_node
+        return None
+
+    def print(self):
+        if self.root is None:
+            return
+
+        def print_node(node, level=0):
+            print("  " * level, end="")
+            if node.children is None:
+                print(f"{node.key} ({level}) -")
+            else:
+                print(f"{node.key} ({level})")
+
+            if node.children:
+                for child in node.children:
+                    print_node(child, level + 1)
+
+        print("Printing tree:")
+        print_node(self.root)
+
+class TreeNode:
+    def __init__(self):
+        self.parent = None
+        self.children = None
+        self.key = None
+
+
+
+graph = {}
+def graph_insert(graph, node1, node2):
+    if node1 not in graph:
+        graph[node1] = []
+    graph[node1].append(node2)
+    if node2 not in graph:
+        graph[node2] = []
+    graph[node2].append(node1)
+    return graph
+
+def print_graph(graph):
+    for node in graph:
+        print(f"{node}: {graph[node]}")
+
+graph = graph_insert(graph, 1, 2)
+graph = graph_insert(graph, 1, 3)
+graph = graph_insert(graph, 2, 4)
+graph = graph_insert(graph, 2, 3)
+graph = graph_insert(graph, 3, 4)
+graph = graph_insert(graph, 3, 5)
+graph = graph_insert(graph, 4, 5)
+graph = graph_insert(graph, 1, 6)
+
+
+
+
+print_graph(graph)
+
+
+
+def bsf(graph, start):
+    tree = Tree()
+    visited = []
+    queue = []
+    current = start
+    visited.append(start)
+    tree.insert(None, start)
+    
+    for element in graph[current]: 
+        queue.append(element)
+        graph[element].remove(current)
+
+    for element in queue:
+        tree.insert(start, element)
+
+    while len(queue) > 0:
+        current = queue.pop(0)
+        for element in graph[current]:
+            if element not in visited and element not in queue:
+                queue.append(element)
+                tree.insert(current, element)
+                graph[element].remove(current)
+
+        visited.append(current)
+    return tree
+
+t = (bsf(graph, 2))
+t.print()
+        
+
+# Big O notation of bsf:
+# O(V + E) where V is the number of vertices and E is the number of edges. In the worst case, we will visit all the vertices and edges of the graph.
