@@ -124,3 +124,35 @@ t.print()
 
 # Big O notation of bsf:
 # O(V + E) where V is the number of vertices and E is the number of edges. In the worst case, we will visit all the vertices and edges of the graph.
+def dfs(graph, start):
+    stack = []
+    visited = {}
+    for node in graph: # O(V)
+        visited[node] = False
+    stack.append(start)
+    tree = Tree()
+    tree.insert(None, start)
+    visited[start] = True
+
+    while len(stack) > 0:
+        current = stack[-1]  # Get the top element of the stack
+        next_node = None
+        for neighbor in graph[current]:
+            if not visited[neighbor]:
+                next_node = neighbor
+                break
+        if next_node is not None:
+            stack.append(next_node)
+            tree.insert(current, next_node)
+            visited[next_node] = True
+        else:
+            stack.pop()
+
+    return tree
+
+t2 = dfs(graph, 2)
+t2.print()
+
+
+# Big O notation of dfs:
+# O(V + E) where V is the number of vertices and E is the number of edges. In the worst case, we will visit all the vertices and edges of the graph.
