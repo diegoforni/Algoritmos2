@@ -154,6 +154,12 @@ def detectCycle(graph, start):
 
     while stack:
         current = stack.pop()
+        print(f"Visiting node {current}")
+        
+        if visited[current]:
+            print(f"Cycle detected at node {current}")
+            return True
+        
         visited[current] = True
 
         for neighbor in graph[current]:
@@ -174,7 +180,6 @@ graphNoCycle = graph_insert(graphNoCycle, 1, 7)
 graphNoCycle = graph_insert(graphNoCycle, 7, 2)
 graphNoCycle = graph_insert(graphNoCycle, 2, 4)
 graphNoCycle = graph_insert(graphNoCycle, 2, 6)
-print_graph(graphNoCycle)
 
 
 
