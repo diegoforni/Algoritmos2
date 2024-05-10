@@ -156,10 +156,6 @@ def detectCycle(graph, start):
         current = stack.pop()
         print(f"Visiting node {current}")
         
-        if visited[current]:
-            print(f"Cycle detected at node {current}")
-            return True
-        
         visited[current] = True
 
         for neighbor in graph[current]:
