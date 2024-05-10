@@ -76,19 +76,6 @@ def print_graph(graph):
     for node in graph:
         print(f"{node}: {graph[node]}")
 
-graph = graph_insert(graph, 1, 2)
-graph = graph_insert(graph, 1, 3)
-graph = graph_insert(graph, 2, 4)
-graph = graph_insert(graph, 2, 3)
-graph = graph_insert(graph, 3, 4)
-graph = graph_insert(graph, 3, 5)
-graph = graph_insert(graph, 4, 5)
-graph = graph_insert(graph, 1, 6)
-
-
-
-
-print_graph(graph)
 
 
 
@@ -118,9 +105,7 @@ def bsf(graph, start):
         visited.append(current)
     return tree
 
-t = (bsf(graph, 2))
-t.print()
-        
+
 
 # Big O notation of bsf:
 # O(V + E) where V is the number of vertices and E is the number of edges. In the worst case, we will visit all the vertices and edges of the graph.
@@ -150,9 +135,47 @@ def dfs(graph, start):
 
     return tree
 
-t2 = dfs(graph, 2)
-t2.print()
+
 
 
 # Big O notation of dfs:
 # O(V + E) where V is the number of vertices and E is the number of edges. In the worst case, we will visit all the vertices and edges of the graph.
+
+def detectCycle(graph, start):
+    stack = []
+    visited = {}
+    parent = {}
+    
+    for node in graph:
+        visited[node] = False
+        parent[node] = None
+    
+    stack.append(start)
+
+    while stack:
+        current = stack.pop()
+        visited[current] = True
+
+        for neighbor in graph[current]:
+            if not visited[neighbor]:
+                stack.append(neighbor)
+                parent[neighbor] = current
+            elif parent[current] != neighbor:
+                print(f"Cycle detected at node {neighbor}")
+                return True
+    return False
+
+
+
+graphNoCycle = {}
+graphNoCycle = graph_insert(graphNoCycle, 1, 5)
+graphNoCycle = graph_insert(graphNoCycle, 1, 6)
+graphNoCycle = graph_insert(graphNoCycle, 1, 7)
+graphNoCycle = graph_insert(graphNoCycle, 7, 2)
+graphNoCycle = graph_insert(graphNoCycle, 2, 4)
+graphNoCycle = graph_insert(graphNoCycle, 2, 6)
+print_graph(graphNoCycle)
+
+
+
+print(detectCycle(graphNoCycle, 1))  # False
