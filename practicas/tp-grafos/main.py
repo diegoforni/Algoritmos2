@@ -169,14 +169,105 @@ def detectCycle(graph, start):
 
 
 
-graphNoCycle = {}
-graphNoCycle = graph_insert(graphNoCycle, 1, 5)
-graphNoCycle = graph_insert(graphNoCycle, 1, 6)
-graphNoCycle = graph_insert(graphNoCycle, 1, 7)
-graphNoCycle = graph_insert(graphNoCycle, 7, 2)
-graphNoCycle = graph_insert(graphNoCycle, 2, 4)
-graphNoCycle = graph_insert(graphNoCycle, 2, 6)
+#graphNoCycle = {}
+#graphNoCycle = graph_insert(graphNoCycle, 1, 5)
+#graphNoCycle = graph_insert(graphNoCycle, 1, 6)
+#graphNoCycle = graph_insert(graphNoCycle, 1, 7)
+#graphNoCycle = graph_insert(graphNoCycle, 7, 2)
+#graphNoCycle = graph_insert(graphNoCycle, 2, 4)
+#graphNoCycle = graph_insert(graphNoCycle, 2, 6)
 
 
 
-print(detectCycle(graphNoCycle, 1))  # False
+#print(detectCycle(graphNoCycle, 1))  # False
+
+class Node:
+    def __init__(self, name):
+        self.name = name
+        self.d = None
+        self.pi = None
+        self.connected = []
+
+    def __repr__(self):
+        return self.name
+
+def insertDWGraph(graph, node1, node2, weight):
+    if node1 not in graph:
+        graph[node1] = node1
+    if node2 not in graph:
+        graph[node2] = node2
+    node1.connected.append((node2, weight))
+    return graph
+
+def printDWGraph(graph):
+    for node in graph:
+        edges = ', '.join([f"({neighbor.name}, {weight})" for neighbor, weight in graph[node].connected])
+        print(f"{node.name}: [{edges}]")
+
+# Example usage:
+graph = {}
+A = Node('A')
+B = Node('B')
+C = Node('C')
+D = Node('D')
+
+
+graph = insertDWGraph(graph, A, B, 5)
+graph = insertDWGraph(graph, A, C, 3)
+graph = insertDWGraph(graph, B, C, 2)
+graph = insertDWGraph(graph, B, D, 1)
+graph = insertDWGraph(graph, C, D, 1)
+
+printDWGraph(graph)
+
+
+def initRelax(G,s):
+    for node in G:
+        if node == s:
+            node.d = 0
+        else:
+            node.d = float('inf')
+            node.pi = None
+
+def relax(u, v, w):
+    if v.d > u.d + w:
+        v.d = u.d + w
+        v.pi = u
+
+
+
+
+def minQueue(graph):
+    return sorted(graph, key=lambda x: x.d)
+
+
+def DIJKSTRA(G, s):
+    initRelax(G, s)
+    S = {}
+    notVisitedNodes = [node for node in G]
+    Q = minQueue(G)
+    while Q:
+        
+        u = Q.pop(0)
+        notVisitedNodes.remove(u)
+
+        S[u] = True
+        for v, w in u.connected:
+            if v not in S:
+                relax(u, v, w)
+        Q = minQueue(notVisitedNodes)        
+
+
+DIJKSTRA(graph, A)
+
+def printPath(G, s, v):
+    if v == s:
+        print(s.name)
+    elif v.pi == None:
+        print("No path from", s.name, "to", v.name)
+    else:
+        printPath(G, s, v.pi)
+        print(v.name)
+
+print("-------------------")
+printPath(graph, A, D)  # A -> C -> D
