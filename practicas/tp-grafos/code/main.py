@@ -136,6 +136,46 @@ def dfs(graph, start):
     return tree
 
 
+def existPath(Grafo, v1, v2):
+    tree = bsf(Grafo, v1)
+    node = tree._find_node(tree.root, v2)
+    if node:
+        return True 
+    else:
+        return False
+    
+def isConnected(Grafo):
+    
+    start = list(Grafo.keys())[0]
+
+    visited = []
+    queue = []
+    current = start
+    visited.append(start)
+    
+    for element in graph[current]: 
+        queue.append(element)
+        graph[element].remove(current)
+
+
+
+    while len(queue) > 0:
+        current = queue.pop(0)
+        for element in graph[current]:
+            if element not in visited and element not in queue:
+                queue.append(element)
+                graph[element].remove(current)
+
+        visited.append(current)
+    
+    graphNodes = 0
+
+
+    if len(visited) == len(Grafo):
+        return True
+    else:
+        return False
+
 
 
 # Big O notation of dfs:
@@ -168,7 +208,11 @@ def detectCycle(graph, start):
     return False
 
 
-
+def isTree(graph):
+    if isConnected(graph) and not detectCycle(graph, list(graph.keys())[0]):
+        return True
+    else:
+        return False
 #graphNoCycle = {}
 #graphNoCycle = graph_insert(graphNoCycle, 1, 5)
 #graphNoCycle = graph_insert(graphNoCycle, 1, 6)
