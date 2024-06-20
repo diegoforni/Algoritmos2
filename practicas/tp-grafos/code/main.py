@@ -144,19 +144,18 @@ def existPath(Grafo, v1, v2):
     else:
         return False
     
-def isConnected(Grafo):
+def isConnected(graph):
     
-    start = list(Grafo.keys())[0]
+    start = list(graph.keys())[0]
 
     visited = []
     queue = []
     current = start
     visited.append(start)
-    
+
     for element in graph[current]: 
         queue.append(element)
         graph[element].remove(current)
-
 
 
     while len(queue) > 0:
@@ -168,15 +167,21 @@ def isConnected(Grafo):
 
         visited.append(current)
     
-    graphNodes = 0
 
 
-    if len(visited) == len(Grafo):
+    if len(visited) == len(graph):
         return True
     else:
         return False
 
+# connectedGraph = {}
+# connectedGraph = graph_insert(connectedGraph, 1, 2)
+# connectedGraph = graph_insert(connectedGraph, 1, 3)
+# connectedGraph = graph_insert(connectedGraph, 2, 4)
+# connectedGraph = graph_insert(connectedGraph, 2, 5)
+# connectedGraph = graph_insert(connectedGraph, 3, 6)
 
+# print(isConnected(connectedGraph))  # True
 
 # Big O notation of dfs:
 # O(V + E) where V is the number of vertices and E is the number of edges. In the worst case, we will visit all the vertices and edges of the graph.
@@ -225,6 +230,95 @@ def isTree(graph):
 
 #print(detectCycle(graphNoCycle, 1))  # False
 
+def countConnections(graph):
+    notVisitedNodes = [node for node in graph]
+    connected = 0
+    while len(notVisitedNodes) > 0:
+        connected += 1
+        start = notVisitedNodes.pop(0)
+        queue = []
+
+        for element in graph[start]:
+            queue.append(element)
+            graph[element].remove(start)
+        
+        while len(queue) > 0:
+            current = queue.pop(0)
+            for element in graph[current]:
+                if element not in queue:
+                    queue.append(element)
+                    graph[element].remove(current)
+            notVisitedNodes.remove(current)
+    return connected
+
+#Matrix representation of a weighted graph
+def insertWGraph(graph, node1, node2, weight):
+    if node1 not in graph:
+        graph[node1] = {}
+    if node2 not in graph:
+        graph[node2] = {}
+    graph[node1][node2] = weight
+    graph[node2][node1] = weight
+    return graph
+
+def createWGraph(matrix):
+    graph = {}
+    for i in range(len(matrix)):
+        for j in range(len(matrix[i])):
+            # If the weight is different from -inf, insert the edge in the graph
+            if matrix[i][j] != -1:
+                graph = insertWGraph(graph, i, j, matrix[i][j])
+    return graph
+
+def printWGraph(graph):
+    for node in graph:
+        edges = ', '.join([f"({neighbor}, {graph[node][neighbor]})" for neighbor in graph[node]])
+        print(f"{node}: [{edges}]")
+
+graphMatrix = [
+    [-1, 5, 3, -1], # Node 0
+    [5, -1, 2, 1],             # Node 1
+    [3, 2, -1, 1],             # Node 2
+    [-1, 1, 1, -1]  # Node 3
+]
+
+
+
+def PRIM(G):
+    T = Tree()
+    # get the first node of the graph in U, the rest in V
+    U = [list(G.keys())[0]]
+    V = list(G.keys())[1:]
+    print(U)
+    print(V)
+    T.insert(None, U[0])
+    while len(V) > 0:
+        minWeight = float('inf')
+        for u in U:
+            for v in V:
+                if v in G[u] and G[u][v] < minWeight:
+                    minWeight = G[u][v]
+                    minEdge = (u, v)
+
+        U.append(minEdge[1])
+        V.remove(minEdge[1])
+        T.insert(minEdge[0], minEdge[1])
+    return T
+
+graphMatrix = [
+    [-1, 6, 1, 5, -1, -1],  # Node 1
+    [6, -1, 5, -1, 3, -1],  # Node 2
+    [1, 5, -1, 5, 6, 4],    # Node 3
+    [5, -1, 5, -1, -1, 2],  # Node 4
+    [-1, 3, 6, -1, -1, 6],  # Node 5
+    [-1, -1, 4, 2, 6, -1]   # Node 6
+]
+
+# Example usage:
+primTree = PRIM(createWGraph(graphMatrix))
+primTree.print()         
+
+
 class Node:
     def __init__(self, name):
         self.name = name
@@ -248,21 +342,21 @@ def printDWGraph(graph):
         edges = ', '.join([f"({neighbor.name}, {weight})" for neighbor, weight in graph[node].connected])
         print(f"{node.name}: [{edges}]")
 
-# Example usage:
-graph = {}
-A = Node('A')
-B = Node('B')
-C = Node('C')
-D = Node('D')
+# # Example usage:
+# graph = {}
+# A = Node('A')
+# B = Node('B')
+# C = Node('C')
+# D = Node('D')
 
 
-graph = insertDWGraph(graph, A, B, 5)
-graph = insertDWGraph(graph, A, C, 3)
-graph = insertDWGraph(graph, B, C, 2)
-graph = insertDWGraph(graph, B, D, 1)
-graph = insertDWGraph(graph, C, D, 1)
+# graph = insertDWGraph(graph, A, B, 5)
+# graph = insertDWGraph(graph, A, C, 3)
+# graph = insertDWGraph(graph, B, C, 2)
+# graph = insertDWGraph(graph, B, D, 1)
+# graph = insertDWGraph(graph, C, D, 1)
 
-printDWGraph(graph)
+# printDWGraph(graph)
 
 
 def initRelax(G,s):
@@ -302,7 +396,7 @@ def DIJKSTRA(G, s):
         Q = minQueue(notVisitedNodes)        
 
 
-DIJKSTRA(graph, A)
+#DIJKSTRA(graph, A)
 
 def printPath(G, s, v):
     if v == s:
@@ -313,5 +407,4 @@ def printPath(G, s, v):
         printPath(G, s, v.pi)
         print(v.name)
 
-print("-------------------")
-printPath(graph, A, D)  # A -> C -> D
+#printPath(graph, A, D)  # A -> C -> D
