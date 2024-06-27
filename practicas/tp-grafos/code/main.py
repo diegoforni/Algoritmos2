@@ -275,12 +275,7 @@ def printWGraph(graph):
         edges = ', '.join([f"({neighbor}, {graph[node][neighbor]})" for neighbor in graph[node]])
         print(f"{node}: [{edges}]")
 
-graphMatrix = [
-    [-1, 5, 3, -1], # Node 0
-    [5, -1, 2, 1],             # Node 1
-    [3, 2, -1, 1],             # Node 2
-    [-1, 1, 1, -1]  # Node 3
-]
+
 
 
 
@@ -316,8 +311,7 @@ graphMatrix = [
 
 # Example usage:
 primTree = PRIM(createWGraph(graphMatrix))
-primTree.print()         
-
+primTree.print()      
 
 class Node:
     def __init__(self, name):
@@ -327,7 +321,82 @@ class Node:
         self.connected = []
 
     def __repr__(self):
-        return self.name
+        return str(self.name)
+
+def createSet(node):
+    node.pi = node
+    node.d = 0
+
+def findSet(node):
+    if node != node.pi:
+        node.pi = findSet(node.pi)
+    return node.pi
+
+def union(node1, node2):
+    xRoot = findSet(node1)
+    yRoot = findSet(node2)
+    if xRoot != yRoot:
+        if xRoot.d < yRoot.d:
+            xRoot.pi = yRoot
+        elif xRoot.d > yRoot.d:
+            yRoot.pi = xRoot
+        else:
+            yRoot.pi = xRoot
+            xRoot.d += 1
+
+def createWGraphWithNodes(matrix):
+    graph = {}
+    for i in range(len(matrix)):
+        for j in range(len(matrix[i])):
+            if matrix[i][j] != -1:
+                if i not in graph:
+                    graph[i] = Node(i)
+                if j not in graph:
+                    graph[j] = Node(j)
+                graph[i].connected.append((graph[j], matrix[i][j]))
+    return graph
+
+def printWGraphWithNodes(graph):
+    for node in graph.values():
+        edges = ', '.join([f"({neighbor.name}, {weight})" for neighbor, weight in node.connected])
+        print(f"{node.name}: [{edges}]")
+
+def KRUSKAL(graph):
+    A = []  # This will store the resulting minimum spanning tree
+    for node in graph.values():
+        createSet(node)
+
+    edges = []
+    for u in graph.values():
+        for v, weight in u.connected:
+            edges.append((u, v, weight))
+
+    edges.sort(key=lambda x: x[2])  # Sort edges by weight
+
+    for u, v, weight in edges:
+        if findSet(u) != findSet(v):
+            A.append((u, v, weight))
+            union(u, v)
+
+    return A
+
+
+testGraph = createWGraphWithNodes(graphMatrix)
+
+# Run Kruskal's algorithm and print the result
+mst = KRUSKAL(testGraph)
+print("\nMinimum Spanning Tree:")
+for u, v, weight in mst:
+    print(f"{u} -- {v}, weight: {weight}")
+
+
+
+
+
+
+
+
+
 
 def insertDWGraph(graph, node1, node2, weight):
     if node1 not in graph:
