@@ -13,30 +13,25 @@ def busquedaBinaria(lista, x):
         if lista[pivot] == x:
             return True
 #print(busquedaBinaria([1, 2, 3, 4, 5, 6, 7, 8, 9], 18))
-
-def busquedaKesimo(lista, k):
-    def quickSelect(lista):
-        if len(lista) <= 1:
-            return lista
-        else:
-            pivot = lista[0]
-            mayores = []
-            menores = []
-            for i in range(1, len(lista)):
-                if lista[i] < pivot:
-                    menores.append(lista[i])
-                elif lista[i] > pivot:
-                    mayores.append(lista[i])
-            if pivot > k:
-                return quickSelect(menores)
-            elif pivot < k:
-                return quickSelect(mayores)
-            else:
-                return pivot
+def quickSelect(lista, k):
+    if len(lista) == 1:
+        return lista[0]
+    pivot = lista[len(lista) // 2]
+    menores = [x for x in lista if x < pivot]
+    mayores = [x for x in lista if x > pivot]
+    pivots = [x for x in lista if x == pivot]
+    
+    if k < len(menores):
+        return quickSelect(menores, k)
+    elif k < len(menores) + len(pivots):
+        return pivot
+    else:
+        return quickSelect(mayores, k - len(menores) - len(pivots))
         
-    return quickSelect(lista)
+def busquedaKesimo(lista, k):
+    return quickSelect(lista,k)
 
-#print(busquedaKesimo([3, 2, 1, 5, 4, 6, 7, 8, 9], 8))
+#print(busquedaKesimo([3, 2, 1, 5, 4, 6, 7, 8, 9], 7))
 def subsecuenciaCreciente(numeros):
     
     def conquer(left, right):
@@ -80,4 +75,28 @@ def subsecuenciaCreciente(numeros):
     
     return divide_and_conquer(numeros)
 
-print(subsecuenciaCreciente([5, 1, 2, 3, 100, 20, 17, 8, 19, 21]))
+#print(subsecuenciaCreciente([5, 1, 2, 3, 100, 20, 17, 8, 19, 21]))
+
+def kElemMediana(S, k):
+    if not S or k < 0 or k >= len(S):
+        return None
+    
+    # Find the median
+    mediana = quickSelect(S, len(S) // 2)
+    
+    # Calculate the absolute differences from the median
+    diff = [abs(x - mediana) for x in S]
+    
+    # Find the k-th smallest difference
+    kth_diff = quickSelect(diff, k)
+    
+    # Find the elements with the k closest differences
+    closest_k_elements = [x for x in S if abs(x - mediana) <= kth_diff]
+    
+    # Sort the closest elements to get exactly k elements
+    closest_k_elements.sort(key=lambda x: abs(x - mediana))
+    
+    return closest_k_elements[:k]
+
+# Test
+print(kElemMediana([10,3,6,7,9], 3))
